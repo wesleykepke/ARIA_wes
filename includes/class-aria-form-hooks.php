@@ -60,11 +60,7 @@ class ARIA_Form_Hooks {
     foreach ($teacher_entries as $entry) {
       $single_teacher = array(
         'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
-        'value' => serialize(array(
-          $entry[strval($teacher_master_field_mapping['first_name'])],
-          $entry[strval($teacher_master_field_mapping['last_name'])],
-          $entry[strval($teacher_master_field_mapping['teacher_hash'])]
-        )),
+        'value' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
         'isSelected' => false
       );
       $formatted_teacher_names[] = $single_teacher;
@@ -111,20 +107,16 @@ class ARIA_Form_Hooks {
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
-    $teacher_name_and_hash = unserialize($entry[(string)$student_fields["teacher_name"]]);
-
-    $teacher_hash = '';
-
     // Hash for teacher (just has the teacher name)
     if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
       // student entered a name that didn't appear in the drop-down menu
       $teacher_name = $entry[$student_fields['not_listed_teacher_name']];
-      $teacher_hash = hash("md5", $teacher_name);
+
     }
     else {
-      $teacher_name = $teacher_name_and_hash[0] . ' ' . $teacher_name_and_hash[1];
-      $teacher_hash = $teacher_name_and_hash[2];
+      $teacher_name = $entry[(string)$student_fields["teacher_name"]];
     }
+    $teacher_hash = hash("md5", $teacher_name);
 
     // Hash for student (student name and entry date)
     $student_name =
@@ -230,6 +222,7 @@ class ARIA_Form_Hooks {
     $email_info['teacher_hash'] = $teacher_hash;
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
+    $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
     $email_info['notification_email'] = $related_forms["notification_email"];
     $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
     $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
@@ -331,10 +324,10 @@ class ARIA_Form_Hooks {
     }
 
     // If the teacher does exist, update the teacher master with the new information
-    $teacher_master_entry[strval($teacher_master_field_ids['first_name'])] =
+/*    $teacher_master_entry[strval($teacher_master_field_ids['first_name'])] =
       $entry[strval($teacher_public_field_ids['first_name'])];
     $teacher_master_entry[strval($teacher_master_field_ids['last_name'])] =
-      $entry[strval($teacher_public_field_ids['last_name'])];
+      $entry[strval($teacher_public_field_ids['last_name'])];*/
     $teacher_master_entry[strval($teacher_master_field_ids['email'])] =
       $entry[strval($teacher_public_field_ids['email'])];
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
